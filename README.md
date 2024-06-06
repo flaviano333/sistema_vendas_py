@@ -7,7 +7,7 @@ Este projeto é uma aplicação web que utiliza Flask no backend e React no fron
 - **Backend**: Flask (Python)
 - **Frontend**: React (JavaScript)
 - **Pagamentos**: API do Mercado Pago
-- **Banco de Dados**: SQLite (pode ser substituído por qualquer outro banco de dados)
+- **Banco de Dados**: MySQL
 
 ## Funcionalidades
 
