@@ -47,7 +47,7 @@ class Usuario(db.Model):
             "email":self.email,
             "status":self.status,
             "data_criacao":data_criacao_formatada,
-            "data_modificacao":data_modificacao_formatada,
+            "data_modificado":data_modificacao_formatada,
             "perfil_idperfil":self.perfil_idperfil,
         }
 
@@ -60,13 +60,94 @@ class Perfil(db.Model):
     # Relacionamento reverso com a tabela usuario
     usuarios = relationship("Usuario", back_populates="perfil")
 
-#selecionar
+def gera_response(status, nome_do_conteudo, conteudo, mensagem = False):
+    body = {}
+    body[nome_do_conteudo] = conteudo
+
+    if(mensagem):
+        body["mensagem"] = mensagem
+
+    return Response(json.dumps(body), status = status, mimetype="application/json")
+
+#selecionar todos
 @app.route("/usuarios", methods=["GET"])
 def seleciona_usuarios():
     usuarios_objetos = Usuario.query.all()
     usuarios_json = [usuario.to_json() for usuario in usuarios_objetos]
-    return Response(json.dumps(usuarios_json))
+    return gera_response(200, "usuarios", usuarios_json)
 
+#selecionar um
+@app.route("/usuario/<id>")
+def seleciona_usuario(id):
+    usuario_objeto = Usuario.query.filter_by(idusuario = id).first()
+    usuario_json = usuario_objeto.to_json()
+    return gera_response(200, "usuario", usuario_json)
 
+#criar usuario
+@app.route("/usuario", methods=["POST"])
+def cria_usuario():
+    body = request.get_json()
 
+    try:
+        usuario = Usuario(nome = body["nome"],
+                          login = body["login"],
+                          senha = body["senha"],
+                          celular = body["celular"],
+                          email = body["email"],
+                          status = body["status"],
+                          data_criacao = body["data_criacao"],
+                          data_modificado = body["data_modificado"],
+                          perfil_idperfil = body["perfil_idperfil"]
+                          )
+        db.session.add(usuario)
+        db.session.commit()
+        return gera_response(201, "usuario", usuario.to_json(), "Cadastrado com sucesso")
+    except Exception as e:
+        print(e)
+        return gera_response(400, "usuario", {}, "ERRO")
+
+#atualizar usuario
+@app.route("/usuario/<id>", methods=["PUT"])
+def atualizar_usuario(id):
+    usuario_objeto = Usuario.query.filter_by(idusuario=id).first()
+    body = request.get_json()
+
+    try:
+        if('nome' in body):
+            usuario_objeto.nome = body['nome']
+
+        if('login' in body):
+            usuario_objeto.login = body['login']
+
+        if('senha' in  body):
+            usuario_objeto.senha = body['senha']
+
+        if('celular' in body):
+            usuario_objeto.celular = body['celular']
+
+        if('email' in body):
+            usuario_objeto.email = body['email']
+
+        if('status' in body):
+            usuario_objeto.status = body['status']
+
+        if('data_criacao' in body):
+            usuario_objeto.data_criacao = body['data_criacao']
+
+        if('data_modificado' in body):
+            usuario_objeto.data_modificado = body['data_modificado']
+
+        if('perfil_idperfil' in body):
+            usuario_objeto.perfil_idperfil = body['perfil_idperfil']
+
+        db.session.add(usuario_objeto)
+        db.session.commit()
+        return gera_response(200, "usuario", usuario_objeto.to_json(), "Alterado com sucesso")
+    except Exception as e:
+        print(e)
+        return gera_response(400, "usuario", {}, "ERRO")
+    
+#deletar usuario
+
+    
 app.run()
