@@ -12,11 +12,13 @@ function App() {
       <Grid container>
         <Grid item xs={2}>
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={8}>
           <Formulario titulo = 'Meu formulário' />
           <Formulario titulo = 'Meu segundo formulário' />
           <Formulario titulo = 'Meu terceiro formulário' />          
-        </Grid>                      
+        </Grid>
+        <Grid item xs={2}>
+        </Grid>       
       </Grid>
   );
 }

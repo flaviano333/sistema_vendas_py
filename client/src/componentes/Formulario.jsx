@@ -38,8 +38,6 @@ function Formulario(props){
     );
 }
 
-Formulario.propTypes = {
-    titulo : PropTypes.string,
-  }
+
   
 export default Formulario;
