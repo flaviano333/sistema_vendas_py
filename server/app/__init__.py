@@ -1,18 +1,28 @@
 from flask import Flask
-from app.config import DevelopmentConfig
-from app.extensions import db
-from app.models import Usuario, Perfil, Produto, Estoque, Categoria, Pagamento, Compra, Menu, Imagem, Desconto, DescontoProduto, ItemCarrinho, MenuHasPerfil
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_dotenv import DotEnv
+from config import Config
 
-def create_app(config_class=DevelopmentConfig):
+db = SQLAlchemy()
+migrate = Migrate()
+
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    app.config.from_object(Config)
+
+    # Initialize dotenv to load environment variables from .env
+    env = DotEnv(app)
+    env.init_app(app, verbose_mode=True)
 
     db.init_app(app)
+    migrate.init_app(app, db)
 
-    with app.app_context():
-        db.create_all()
+    # Register Blueprints
+    from app.routes.usuario_routes import bp as usuario_bp
+    app.register_blueprint(usuario_bp)
 
-    from app.routes import main as main_blueprint
-    app.register_blueprint(main_blueprint)
+    from app.routes.produto_routes import bp as produto_bp
+    app.register_blueprint(produto_bp)
 
     return app
