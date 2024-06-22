@@ -3,8 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_dotenv import DotEnv
 from config import Config
-
-db = SQLAlchemy()
+from app.extensions import db
 migrate = Migrate()
 
 def create_app():
@@ -21,8 +20,5 @@ def create_app():
     # Register Blueprints
     from app.routes.usuario_routes import bp as usuario_bp
     app.register_blueprint(usuario_bp)
-
-    from app.routes.produto_routes import bp as produto_bp
-    app.register_blueprint(produto_bp)
 
     return app

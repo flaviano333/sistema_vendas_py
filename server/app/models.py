@@ -96,6 +96,22 @@ class Usuario(db.Model):
 
     perfil = db.relationship('Perfil')
 
+    def to_json(self):
+        data_criacao_formatada = self.data_criacao.isoformat() if self.data_criacao is not None else None
+        data_modificacao_formatada = self.data_modificado.isoformat() if self.data_modificado is not None else None        
+        return {
+            "idusuario": self.idusuario,
+            "nome": self.nome,
+            "login":self.login,
+            "senha":self.senha,
+            "celular":self.celular,
+            "email":self.email,
+            "status":self.status,
+            "data_criacao":data_criacao_formatada,
+            "data_modificado":data_modificacao_formatada,
+            "perfil_idperfil":self.perfil_idperfil,
+        }
+    
 class ItemCarrinho(db.Model):
     __tablename__ = 'item_carrinho'
     idproduto = db.Column(db.Integer, db.ForeignKey('produto.idproduto'), primary_key=True)
@@ -109,7 +125,7 @@ class ItemCarrinho(db.Model):
 class MenuHasPerfil(db.Model):
     __tablename__ = 'menu_has_perfil'
     menu_idmenu = db.Column(db.Integer, db.ForeignKey('menu.idmenu'), primary_key=True)
-    perfil_idperfil = db.Column(db.Integer, db.ForeignKey('perfil.idperfil'), primary key=True)
+    perfil_idperfil = db.Column(db.Integer, db.ForeignKey('perfil.idperfil'), primary_key=True)
 
     menu = db.relationship('Menu')
     perfil = db.relationship('Perfil')
