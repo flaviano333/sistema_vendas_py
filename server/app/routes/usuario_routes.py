@@ -1,9 +1,9 @@
-from flask import Blueprint, jsonify, request, Response
+from flask import Blueprint, jsonify, request, Response, current_app
 from app.services.usuario_service import*
 import json
 
-usuario_bp = Blueprint('usuario', __name__)
-
+bp = Blueprint('usuario', __name__, url_prefix='/usuarios')
+    
 def gera_response(status, nome_do_conteudo, conteudo, mensagem=False):
     body = {}
     body[nome_do_conteudo] = conteudo
@@ -11,13 +11,13 @@ def gera_response(status, nome_do_conteudo, conteudo, mensagem=False):
         body["mensagem"] = mensagem
     return Response(json.dumps(body), status=status, mimetype="application/json")
 
-@usuario_bp.route("/", methods=["GET"])
+@bp.route("/", methods=["GET"])
 def seleciona_usuarios():
     usuarios_objetos = get_all_usuarios()
     usuarios_json = [usuario.to_json() for usuario in usuarios_objetos]
     return gera_response(200, "usuarios", usuarios_json)
 
-@usuario_bp.route("/<int:id>", methods=["GET"])
+@bp.route("/<int:id>", methods=["GET"])
 def seleciona_usuario(id):
     usuario_objeto = get_usuario_by_id(id)
     if not usuario_objeto:
@@ -25,7 +25,7 @@ def seleciona_usuario(id):
     usuario_json = usuario_objeto.to_json()
     return gera_response(200, "usuario", usuario_json)
 
-@usuario_bp.route("/<int:id>", methods=["PUT"])
+@bp.route("/<int:id>", methods=["PUT"])
 def atualizar_usuario(id):
     usuario_objeto = get_usuario_by_id(id)
     if not usuario_objeto:
@@ -39,7 +39,7 @@ def atualizar_usuario(id):
         print(e)
         return gera_response(400, "usuario", {}, "ERRO")
 
-@usuario_bp.route("/", methods=["POST"])
+@bp.route("/", methods=["POST"])
 def create_usuario_route():
     data = request.get_json()
     try:
@@ -48,7 +48,7 @@ def create_usuario_route():
     except Exception as e:
         return jsonify({"error": str(e)}), 400  
 
-@usuario_bp.route("/usuario/<id>", methods=["DELETE"]) 
+@bp.route("/<int:id>", methods=["DELETE"]) 
 def deletar_usuario():
     try:
         usuario_deletado = delete_usuario(id)
