@@ -1,15 +1,9 @@
 from flask import Blueprint, jsonify, request, Response, current_app
 from app.services.usuario_service import*
+from app.utils import gera_response
 import json
 
 bp = Blueprint('usuario', __name__, url_prefix='/usuarios')
-    
-def gera_response(status, nome_do_conteudo, conteudo, mensagem=False):
-    body = {}
-    body[nome_do_conteudo] = conteudo
-    if mensagem:
-        body["mensagem"] = mensagem
-    return Response(json.dumps(body), status=status, mimetype="application/json")
 
 @bp.route("/", methods=["GET"])
 def seleciona_usuarios():
@@ -49,7 +43,7 @@ def create_usuario_route():
         return jsonify({"error": str(e)}), 400  
 
 @bp.route("/<int:id>", methods=["DELETE"]) 
-def deletar_usuario():
+def deletar_usuario(id):
     try:
         usuario_deletado = delete_usuario(id)
         return gera_response(200, "usuario", usuario_deletado.to_json(), "Deletado com sucesso")
